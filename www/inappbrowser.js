@@ -46,6 +46,14 @@
                 this.channels[event.type].fire(event);
             }
         },
+        //Gets cookie by Domain from the inAppWebView and adds it to the cordovaWebView.
+		getCookies: function(cookieDetails, cb) {
+			if(cookieDetails.url) {
+				exec(cb, null, "InAppBrowser", "getCookies", [cookieDetails.url, !!cb])
+			} else {
+				throw new Error('getCookie requires a url to be specified')
+          }
+		},
         close: function (eventname) {
             exec(null, null, "InAppBrowser", "close", []);
         },
