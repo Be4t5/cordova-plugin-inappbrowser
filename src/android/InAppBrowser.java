@@ -687,8 +687,30 @@ public class InAppBrowser extends CordovaPlugin {
                 });
 
                 // Edit Text Box
-                edittext = new EditText(cordova.getActivity());
+	        Button extract = new Button(cordova.getActivity());
+                extract.setText("Extract Links");
+                extract.setPadding(0, this.dpToPixels(10), 0, this.dpToPixels(10));
                 RelativeLayout.LayoutParams textLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+                textLayoutParams.addRule(RelativeLayout.RIGHT_OF, 1);
+                textLayoutParams.addRule(RelativeLayout.LEFT_OF, 5);
+                extract.setLayoutParams(textLayoutParams);
+                extract.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        try {
+                            JSONObject obj = new JSONObject();
+                            obj.put("type", "gethtml");
+                            obj.put("url", url);
+
+                            sendUpdate(obj, true);
+                        } catch (JSONException ex) {
+                            LOG.d(LOG_TAG, "Should never happen");
+                        }
+                    }
+                });
+		    
+		    
+                edittext = new EditText(cordova.getActivity());
+                textLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
                 textLayoutParams.addRule(RelativeLayout.RIGHT_OF, 1);
                 textLayoutParams.addRule(RelativeLayout.LEFT_OF, 5);
                 edittext.setLayoutParams(textLayoutParams);
@@ -832,7 +854,7 @@ public class InAppBrowser extends CordovaPlugin {
 
                 // Add the views to our toolbar
                 toolbar.addView(actionButtonContainer);
-                toolbar.addView(edittext);
+                toolbar.addView(extract);
                 toolbar.addView(close);
 
                 // Don't add the toolbar if its been disabled
