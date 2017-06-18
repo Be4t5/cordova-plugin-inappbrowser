@@ -84,6 +84,7 @@ public class InAppBrowser extends CordovaPlugin {
     private static final String LOAD_START_EVENT = "loadstart";
     private static final String LOAD_STOP_EVENT = "loadstop";
     private static final String LOAD_ERROR_EVENT = "loaderror";
+    private static final String GET_HTML_EVENT = "gethtml";
     private static final String CLEAR_ALL_CACHE = "clearcache";
     private static final String CLEAR_SESSION_CACHE = "clearsessioncache";
     private static final String HARDWARE_BACK_BUTTON = "hardwareback";
@@ -698,7 +699,7 @@ public class InAppBrowser extends CordovaPlugin {
                     public void onClick(View v) {
                         try {
                             JSONObject obj = new JSONObject();
-                            obj.put("type", "gethtml");
+                            obj.put("type", GET_HTML_EVENT);
                             obj.put("url", url);
 
                             sendUpdate(obj, true);
