@@ -639,6 +639,7 @@ public class InAppBrowser extends CordovaPlugin {
 
                 // Back button
                 ImageButton back = new ImageButton(cordova.getActivity());
+              back.setFocusable(true);
                 RelativeLayout.LayoutParams backLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
                 backLayoutParams.addRule(RelativeLayout.ALIGN_LEFT);
                 back.setLayoutParams(backLayoutParams);
@@ -665,6 +666,7 @@ public class InAppBrowser extends CordovaPlugin {
 
                 // Forward button
                 ImageButton forward = new ImageButton(cordova.getActivity());
+                forward.setFocusable(true);
                 RelativeLayout.LayoutParams forwardLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
                 forwardLayoutParams.addRule(RelativeLayout.RIGHT_OF, 2);
                 forward.setLayoutParams(forwardLayoutParams);
@@ -689,52 +691,55 @@ public class InAppBrowser extends CordovaPlugin {
                 });
 
                 // Edit Text Box
-	        Button extract = new Button(cordova.getActivity());
-                extract.setText("Extract Links");
-                extract.setPadding(0, this.dpToPixels(10), 0, this.dpToPixels(10));
-                RelativeLayout.LayoutParams textLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-                textLayoutParams.addRule(RelativeLayout.RIGHT_OF, 1);
-                textLayoutParams.addRule(RelativeLayout.LEFT_OF, 5);
-                extract.setLayoutParams(textLayoutParams);
-                extract.setOnClickListener(new View.OnClickListener() {
+              if(showLocationBar) {
+                  Button extract = new Button(cordova.getActivity());
+                  extract.setText("Extract Links");
+                  extract.setPadding(0, this.dpToPixels(10), 0, this.dpToPixels(10));
+                  RelativeLayout.LayoutParams textLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+                  textLayoutParams.addRule(RelativeLayout.RIGHT_OF, 1);
+                  textLayoutParams.addRule(RelativeLayout.LEFT_OF, 5);
+                  extract.setLayoutParams(textLayoutParams);
+                  extract.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
-                        try {
-                            JSONObject obj = new JSONObject();
-                            obj.put("type", GET_HTML_EVENT);
-                            obj.put("url", url);
+                      try {
+                        JSONObject obj = new JSONObject();
+                        obj.put("type", GET_HTML_EVENT);
+                        obj.put("url", url);
 
-                            sendUpdate(obj, true);
-                        } catch (JSONException ex) {
-                            LOG.d(LOG_TAG, "Should never happen");
-                        }
+                        sendUpdate(obj, true);
+                      } catch (JSONException ex) {
+                        LOG.d(LOG_TAG, "Should never happen");
+                      }
                     }
-                });
-		    
-		    
-                edittext = new EditText(cordova.getActivity());
-                textLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-                textLayoutParams.addRule(RelativeLayout.RIGHT_OF, 1);
-                textLayoutParams.addRule(RelativeLayout.LEFT_OF, 5);
-                edittext.setLayoutParams(textLayoutParams);
-                edittext.setId(Integer.valueOf(4));
-                edittext.setSingleLine(true);
-                edittext.setText(url);
-                edittext.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
-                edittext.setImeOptions(EditorInfo.IME_ACTION_GO);
-                edittext.setInputType(InputType.TYPE_NULL); // Will not except input... Makes the text NON-EDITABLE
-                edittext.setOnKeyListener(new View.OnKeyListener() {
+                  });
+
+
+                  edittext = new EditText(cordova.getActivity());
+                  textLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+                  textLayoutParams.addRule(RelativeLayout.RIGHT_OF, 1);
+                  textLayoutParams.addRule(RelativeLayout.LEFT_OF, 5);
+                  edittext.setLayoutParams(textLayoutParams);
+                  edittext.setId(Integer.valueOf(4));
+                  edittext.setSingleLine(true);
+                  edittext.setText(url);
+                  edittext.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
+                  edittext.setImeOptions(EditorInfo.IME_ACTION_GO);
+                  edittext.setInputType(InputType.TYPE_NULL); // Will not except input... Makes the text NON-EDITABLE
+                  edittext.setOnKeyListener(new View.OnKeyListener() {
                     public boolean onKey(View v, int keyCode, KeyEvent event) {
-                        // If the event is a key-down event on the "enter" button
-                        if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                          navigate(edittext.getText().toString());
-                          return true;
-                        }
-                        return false;
+                      // If the event is a key-down event on the "enter" button
+                      if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                        navigate(edittext.getText().toString());
+                        return true;
+                      }
+                      return false;
                     }
-                });
+                  });
+                }
 
                 // Close/Done button
                 ImageButton close = new ImageButton(cordova.getActivity());
+                close.setFocusable(true);
                 RelativeLayout.LayoutParams closeLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
                 closeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                 close.setLayoutParams(closeLayoutParams);
