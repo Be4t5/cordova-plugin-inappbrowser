@@ -540,12 +540,17 @@ public class InAppBrowser extends CordovaPlugin {
         showLocationBar = true;
         showZoomControls = true;
         openWindowHidden = false;
+    	Boolean showExtractLink = true;
         mediaPlaybackRequiresUserGesture = false;
 
         if (features != null) {
             Boolean show = features.get(LOCATION);
             if (show != null) {
                 showLocationBar = show.booleanValue();
+            }
+            Boolean showExt = features.get("showExtractLink");
+            if (showExt != null) {
+                showExtractLink = showExt.booleanValue();
             }
             Boolean zoom = features.get(ZOOM);
             if (zoom != null) {
@@ -861,7 +866,7 @@ public class InAppBrowser extends CordovaPlugin {
 
                 // Add the views to our toolbar
                 toolbar.addView(actionButtonContainer);
-		if(showLocationBar) {
+		if(showExtractLink) {
                 	toolbar.addView(extract);
 		}
                 toolbar.addView(close);
