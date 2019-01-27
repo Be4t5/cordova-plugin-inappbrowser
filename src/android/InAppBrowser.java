@@ -99,6 +99,7 @@ public class InAppBrowser extends CordovaPlugin {
     private EditText edittext;
     private CallbackContext callbackContext;
     private boolean showLocationBar = true;
+	private boolean showExtractLink = true;
     private boolean showZoomControls = true;
     private boolean openWindowHidden = false;
     private boolean clearAllCache = false;
@@ -540,7 +541,7 @@ public class InAppBrowser extends CordovaPlugin {
         showLocationBar = true;
         showZoomControls = true;
         openWindowHidden = false;
-    	Boolean showExtractLink = true;
+    	showExtractLink = true;
         mediaPlaybackRequiresUserGesture = false;
 
         if (features != null) {
