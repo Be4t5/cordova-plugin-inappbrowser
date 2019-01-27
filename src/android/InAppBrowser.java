@@ -691,7 +691,7 @@ public class InAppBrowser extends CordovaPlugin {
                 });
 
                 // Edit Text Box
-              if(showLocationBar) {
+              
                   Button extract = new Button(cordova.getActivity());
                   extract.setText("Extract Links");
                   extract.setPadding(0, this.dpToPixels(10), 0, this.dpToPixels(10));
@@ -735,7 +735,7 @@ public class InAppBrowser extends CordovaPlugin {
                       return false;
                     }
                   });
-                }
+                
 
                 // Close/Done button
                 ImageButton close = new ImageButton(cordova.getActivity());
@@ -861,7 +861,9 @@ public class InAppBrowser extends CordovaPlugin {
 
                 // Add the views to our toolbar
                 toolbar.addView(actionButtonContainer);
-                toolbar.addView(extract);
+		if(showLocationBar) {
+                	toolbar.addView(extract);
+		}
                 toolbar.addView(close);
 
                 // Don't add the toolbar if its been disabled
