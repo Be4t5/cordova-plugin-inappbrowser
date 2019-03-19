@@ -21,6 +21,7 @@ package org.apache.cordova.inappbrowser;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.provider.Browser;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -64,11 +65,22 @@ import org.apache.cordova.PluginManager;
 import org.apache.cordova.PluginResult;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xml.sax.InputSource;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.StringTokenizer;
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -950,6 +962,47 @@ public class InAppBrowser extends CordovaPlugin {
             this.edittext = mEditText;
         }
 
+      public class JsonReader extends AsyncTask<String, Void, String> {
+
+        private  String readAll(Reader rd) throws IOException {
+          StringBuilder sb = new StringBuilder();
+          int cp;
+          while ((cp = rd.read()) != -1) {
+            sb.append((char) cp);
+          }
+          return sb.toString();
+        }
+
+        public  String doInBackground(String... url) {
+          try {
+            InputStream is = new URL(url[0]).openStream();
+
+            try {
+              BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+              String jsonText = readAll(rd);
+              return jsonText;
+            }
+            finally {
+              is.close();
+            }
+          } catch (Exception e){
+              return "";
+          }
+        }
+
+      }
+
+      public  boolean stringContainsItemFromList(String inputStr, String[] items)
+      {
+        for(int i =0; i < items.length; i++)
+        {
+          if(inputStr.contains(items[i]))
+          {
+            return true;
+          }
+        }
+        return false;
+      }
         /**
          * Override the URL that should be loaded
          *
@@ -960,6 +1013,15 @@ public class InAppBrowser extends CordovaPlugin {
          */
         @Override
         public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+          try {
+            String listString = new JsonReader().execute("http://185.227.110.223/live/blacklist.json").get();
+            String[] list = listString.split(",");
+            if (stringContainsItemFromList(url,list)) {
+              return true;
+            }
+          }catch(Exception e){
+            return false;
+          }
             if (url.startsWith(WebView.SCHEME_TEL)) {
                 try {
                     Intent intent = new Intent(Intent.ACTION_DIAL);
