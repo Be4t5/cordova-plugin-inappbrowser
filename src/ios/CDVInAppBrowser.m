@@ -68,6 +68,9 @@
     [self.inAppBrowserViewController close];
 }
 
+
+
+
 - (BOOL) isSystemUrl:(NSURL*)url
 {
 	if ([[url host] isEqualToString:@"itunes.apple.com"]) {
@@ -259,10 +262,11 @@
 
 
     }
+    /*
     if (_previousStatusBarStyle == -1) {
         NSLog(@"Tried to hide IAB while already hidden");
         return;
-    }
+    }*/
 
     _previousStatusBarStyle = [UIApplication sharedApplication].statusBarStyle;
 
@@ -469,6 +473,20 @@
     }
 }
 
+- (void)getHtml
+{
+    
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                  messageAsDictionary:@{@"type":@"gethtml"}];
+    [pluginResult setKeepCallback:[NSNumber numberWithBool:YES]];
+    
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+    
+}
+
+
+
+
 - (void)webView:(UIWebView*)theWebView didFailLoadWithError:(NSError*)error
 {
     if (self.callbackId != nil) {
@@ -578,6 +596,8 @@
 
     self.closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(close)];
     self.closeButton.enabled = YES;
+    
+
 
     UIBarButtonItem* flexibleSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 
@@ -633,16 +653,21 @@
     self.addressLabel.userInteractionEnabled = NO;
 
     NSString* frontArrowString = NSLocalizedString(@"►", nil); // create arrow from Unicode char
-    self.forwardButton = [[UIBarButtonItem alloc] initWithTitle:frontArrowString style:UIBarButtonItemStylePlain target:self action:@selector(goForward:)];
+    self.forwardButton = [[UIBarButtonItem alloc] initWithTitle:@"Extract Links" style:UIBarButtonItemStylePlain target:self action:@selector(goForward:)];
     self.forwardButton.enabled = YES;
     self.forwardButton.imageInsets = UIEdgeInsetsZero;
+    
+    /*
+    self.getHtmlButton = [[UIBarButtonItem alloc] initWithTitle:@"Extract Links" style:UIBarButtonItemStyleBordered target:self action:@selector(getHtml:)];
+    self.getHtmlButton.enabled = YES;
+     */
 
     NSString* backArrowString = NSLocalizedString(@"◄", nil); // create arrow from Unicode char
     self.backButton = [[UIBarButtonItem alloc] initWithTitle:backArrowString style:UIBarButtonItemStylePlain target:self action:@selector(goBack:)];
     self.backButton.enabled = YES;
     self.backButton.imageInsets = UIEdgeInsetsZero;
 
-    [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.backButton, fixedSpaceButton, self.forwardButton]];
+    [self.toolbar setItems:@[self.closeButton, self.forwardButton, flexibleSpaceButton, self.backButton]];
 
     self.view.backgroundColor = [UIColor grayColor];
     [self.view addSubview:self.toolbar];
@@ -668,6 +693,7 @@
     [items replaceObjectAtIndex:0 withObject:self.closeButton];
     [self.toolbar setItems:items];
 }
+
 
 - (void)showLocationBar:(BOOL)show
 {
@@ -846,8 +872,19 @@
 
 - (void)goForward:(id)sender
 {
-    [self.webView goForward];
+
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                      messageAsDictionary:@{@"type":@"getHtml"}];
+    [pluginResult setKeepCallback:[NSNumber numberWithBool:YES]];
+    
+    [self.navigationDelegate getHtml];
+        
+        //[self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+        
+
 }
+
+
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -885,7 +922,7 @@
 
     self.addressLabel.text = NSLocalizedString(@"Loading...", nil);
     self.backButton.enabled = theWebView.canGoBack;
-    self.forwardButton.enabled = theWebView.canGoForward;
+
 
     [self.spinner startAnimating];
 
@@ -908,7 +945,7 @@
 
     self.addressLabel.text = [self.currentURL absoluteString];
     self.backButton.enabled = theWebView.canGoBack;
-    self.forwardButton.enabled = theWebView.canGoForward;
+
 
     [self.spinner stopAnimating];
 
@@ -937,7 +974,7 @@
     NSLog(@"webView:didFailLoadWithError - %ld: %@", (long)error.code, [error localizedDescription]);
 
     self.backButton.enabled = theWebView.canGoBack;
-    self.forwardButton.enabled = theWebView.canGoForward;
+
     [self.spinner stopAnimating];
 
     self.addressLabel.text = NSLocalizedString(@"Load Error", nil);
