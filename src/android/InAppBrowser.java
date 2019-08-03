@@ -874,17 +874,21 @@ public class InAppBrowser extends CordovaPlugin {
                 lp.width = WindowManager.LayoutParams.MATCH_PARENT;
                 lp.height = WindowManager.LayoutParams.MATCH_PARENT;
 
-                dialog.setContentView(main);
-                dialog.show();
-                dialog.getWindow().setAttributes(lp);
-                // the goal of openhidden is to load the url and not display it
-                // Show() needs to be called to cause the URL to be loaded
-                if(openWindowHidden) {
+                try {
+                  dialog.setContentView(main);
+                  dialog.show();
+                  dialog.getWindow().setAttributes(lp);
+                  // the goal of openhidden is to load the url and not display it
+                  // Show() needs to be called to cause the URL to be loaded
+                  if (openWindowHidden) {
                     dialog.hide();
-                }
+                  }
+                }catch (Exception e){}
             }
         };
-        this.cordova.getActivity().runOnUiThread(runnable);
+	try {
+          this.cordova.getActivity().runOnUiThread(runnable);
+        }catch (Exception e){}
         return "";
     }
 
