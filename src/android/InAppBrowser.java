@@ -455,10 +455,14 @@ public class InAppBrowser extends CordovaPlugin {
                 childView.setWebViewClient(new WebViewClient() {
                     // NB: wait for about:blank before dismissing
                     public void onPageFinished(WebView view, String url) {
+                        try {
                         if (dialog != null) {
-                            dialog.dismiss();
-                            dialog = null;
+                          dialog.dismiss();
+                          dialog = null;
                         }
+                      }catch (Exception e){
+
+                      }
                     }
                 });
                 // NB: From SDK 19: "If you call methods on WebView from any thread
