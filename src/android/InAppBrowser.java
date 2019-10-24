@@ -63,6 +63,7 @@ import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.LOG;
 import org.apache.cordova.PluginManager;
 import org.apache.cordova.PluginResult;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xml.sax.InputSource;
@@ -255,7 +256,7 @@ public class InAppBrowser extends CordovaPlugin {
             } else {
                 jsWrapper = "(function(d) { var c = d.createElement('script'); c.src = %s; d.body.appendChild(c); })(document)";
             }
-            injectDeferredObject(args.getString(0), jsWrapper);
+          runJavascriptWithResult(args.getString(0), callbackContext);
         }
         else if (action.equals("injectStyleCode")) {
             String jsWrapper;
@@ -279,7 +280,7 @@ public class InAppBrowser extends CordovaPlugin {
             this.cordova.getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-	          try{
+                  try{
                     dialog.show();
                   }catch (Exception e ){}
                 }
@@ -305,6 +306,29 @@ public class InAppBrowser extends CordovaPlugin {
         return true;
     }
 
+  public void runJavascriptWithResult(String scriptToInject, CallbackContext callbackContext) {
+    final String finalScriptToInject = scriptToInject;
+    final CallbackContext finalCallbackContext = callbackContext;
+    final String callbackId = callbackContext.getCallbackId();
+    cordova.getActivity().runOnUiThread(new Runnable() {
+      @SuppressLint("NewApi")
+      @Override
+      public void run() {
+        inAppWebView.evaluateJavascript(finalScriptToInject, new ValueCallback<String>() {
+          @Override
+          public void onReceiveValue(String s) {
+            PluginResult pluginResult;
+            try {
+              pluginResult = new PluginResult(PluginResult.Status.OK, new JSONArray("[" + s + "]"));
+            } catch(JSONException e) {
+              pluginResult = new PluginResult(PluginResult.Status.JSON_EXCEPTION, e.getMessage());
+            }
+            finalCallbackContext.sendPluginResult(pluginResult);
+          }
+        });
+      }
+    });
+  }
     /**
      * Called when the view navigates.
      */
@@ -457,7 +481,7 @@ public class InAppBrowser extends CordovaPlugin {
                 childView.setWebViewClient(new WebViewClient() {
                     // NB: wait for about:blank before dismissing
                     public void onPageFinished(WebView view, String url) {
-                        try {
+                      try {
                         if (dialog != null) {
                           dialog.dismiss();
                           dialog = null;
@@ -886,7 +910,7 @@ public class InAppBrowser extends CordovaPlugin {
                 }catch (Exception e){}
             }
         };
-	try {
+        try {
           this.cordova.getActivity().runOnUiThread(runnable);
         }catch (Exception e){}
         return "";
@@ -1084,6 +1108,7 @@ public class InAppBrowser extends CordovaPlugin {
             }
             return false;
         }
+
 
 
         /*
